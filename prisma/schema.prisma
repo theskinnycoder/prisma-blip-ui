@@ -1,0 +1,34 @@
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  shadowDatabaseUrl    = env("SHADOW_DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+model User {
+  id        String     @id @default(uuid())
+  handle    String
+  email     String     @unique
+  workshops Workshop[]
+}
+
+model Workshop {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  manager   User       @relation(fields: [managerId], references: [id])
+  managerId String     @unique
+  attendees Attendee[]
+}
+
+model Attendee {
+  id          String     @id @default(uuid())
+  name        String
+  email       String     @unique
+  phoneNumber String?
+  workshops   Workshop[]
+}
